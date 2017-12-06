@@ -6,4 +6,5 @@ App.prime = App.cable.subscriptions.create "PrimeChannel",
     # Called when the subscription has been terminated by the server
 
   received: (data) ->
+    this.App.prime.updateReceived(data)
     # Called when there's incoming data on the websocket for this channel
