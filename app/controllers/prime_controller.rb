@@ -17,7 +17,7 @@ class PrimeController < ApplicationController
   def calculate
     valid = true
     message = ''
-    data = nil
+    data = {}
 
     begin
       validate
@@ -25,10 +25,12 @@ class PrimeController < ApplicationController
       grid_size = params[:grid_size]
       reference = params[:reference]
 
+      data[:reference] = reference
+
       grid_size = grid_size.to_i
 
       # TODO canderson 05/12/17 - Run as perform now for now, change to perform later after initial tests
-      data = PrimeJob.perform_now(grid_size, reference)
+      data[:result] = PrimeJob.perform_now(grid_size, reference)
 
     rescue Exception => e
       Rails.logger.debug e

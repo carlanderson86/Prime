@@ -1,5 +1,5 @@
 Prime = function() {
-    this.requests = [];
+    this.requests = {};
 }
 
 /**
@@ -21,7 +21,7 @@ Prime.prototype.calculate = function(grid_size, selector){
         reference:reference
     };
 
-    this.requests.push(data);
+    this.requests[reference] = data;
     var self = this;
     $.ajax({
         url:'prime/calculate',
@@ -46,8 +46,52 @@ Prime.prototype.calculate = function(grid_size, selector){
  *
  * @author Carl Anderson
  */
-Prime.prototype.updateReceived = function(data){
-    console.log(data);
+Prime.prototype.updateReceived = function(json){
+    if(json.valid){
+        this.displayResult(json.data)
+    }else{
+        var request = this.requests[json.data.reference];
+        if(request != null){
+            $(selector).html(json.message);
+        }
+    }
+}
+
+
+/**
+ * Method: updateReceived
+ *
+ * Description: Update Received
+ *
+ * @param data
+ *
+ * @author Carl Anderson
+ */
+Prime.prototype.displayResult = function(data){
+
+    var request = this.requests[data.reference];
+
+    if(request != null){
+        var selector = request.selector;
+        var container = $(selector);
+        container.empty();
+        var result = data.result;
+
+        var row,entry,element,rowElement = null;
+        var width = container.width() / result.length;
+        for(var y = 0;y < result.length;y++){
+            row = result[y];
+            rowElement = document.createElement("div");
+            for(var x = 0;x < row.length;x++){
+                entry = row[x];
+                element = document.createElement("span");
+                element.setAttribute("style","width:" + width + ";");
+                element.innerHTML = entry + "| ";
+                rowElement.append(element);
+            }
+            container.append(rowElement);
+        }
+    }
 }
 
 /**
