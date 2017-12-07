@@ -29,7 +29,6 @@ class PrimeController < ApplicationController
 
       grid_size = grid_size.to_i
 
-      # TODO canderson 05/12/17 - Run as perform now for now, change to perform later after initial tests
       data[:result] = PrimeJob.perform_now(grid_size, reference)
 
     rescue Exception => e
