@@ -66,10 +66,6 @@ module PrimeHelper
     while primes.length < grid_size
       if PrimeHelper.is_prime(number:count)
         primes << count
-
-        if primes.length % 1000 == 0
-          Rails.logger.debug "Found #{primes.length} Primes"
-        end
       end
 
       # Add on the increment
