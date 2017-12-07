@@ -1,9 +1,10 @@
 PrimeIndex = function(){
-
 }
 
+PrimeIndex.prime = null;
+
 PrimeIndex.load = function(){
-    var prime = new Prime();
+    PrimeIndex.prime = new Prime();
     $("#calculateBtn").off("click").on("click",function(){
 
         var gridSize = $("#gridSize").val();
@@ -13,7 +14,7 @@ PrimeIndex.load = function(){
             if(gridSize <= 1){
                 $("#gridResponse").html("Please enter a grid size greater than 1");
             }else{
-                prime.calculate(gridSize,"#gridResponse");
+                PrimeIndex.prime.calculate(gridSize,"#gridResponse","#calculateBtn");
             }
 
         }else{

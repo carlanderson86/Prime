@@ -1,3 +1,8 @@
+/**
+ * Class to process prime requests
+ *
+ * @constructor
+ */
 Prime = function() {
     this.requests = {};
 }
@@ -12,14 +17,22 @@ Prime = function() {
  *
  * @author Carl Anderson
  */
-Prime.prototype.calculate = function(grid_size, selector){
+Prime.prototype.calculate = function(grid_size, selector, btnSelector){
+    // Originally the plan for this was to allow multiple calls and have them all jobbed off but the result sets can be so large it's not used
     var reference = this.guid();
 
     var data = {
         grid_size:grid_size,
         selector:selector,
-        reference:reference
+        reference:reference,
+        btnSelector:btnSelector
     };
+
+    $(btnSelector).html("Processing");
+    $(btnSelector).attr("disabled",true);
+
+    var container = $(selector);
+    container.empty();
 
     this.requests[reference] = data;
     var self = this;
@@ -29,10 +42,11 @@ Prime.prototype.calculate = function(grid_size, selector){
         data:data,
         error: function(xhr,status,error){
             $(selector).html("Failed to contact server");
+            $(btnSelector).html("Calculate");
         },
         success: function(result,status,xhr){
             $(selector).html("Processing");
-            self.updateReceived(result)
+            self.updateReceived(result);
         }
     });
 }
@@ -52,7 +66,7 @@ Prime.prototype.updateReceived = function(json){
     }else{
         var request = this.requests[json.data.reference];
         if(request != null){
-            $(selector).html(json.message);
+            $(request.selector).html(json.message);
         }
     }
 }
@@ -61,7 +75,7 @@ Prime.prototype.updateReceived = function(json){
 /**
  * Method: updateReceived
  *
- * Description: Update Received
+ * Description: Update Received, display the result
  *
  * @param data
  *
@@ -78,20 +92,25 @@ Prime.prototype.displayResult = function(data){
         var result = data.result;
 
         var row,entry,element,rowElement = null;
-        var width = container.width() / result.length;
         for(var y = 0;y < result.length;y++){
             row = result[y];
-            rowElement = document.createElement("div");
+            rowElement = document.createElement("tr");
             for(var x = 0;x < row.length;x++){
                 entry = row[x];
-                element = document.createElement("span");
-                element.setAttribute("style","width:" + width + ";");
-                element.innerHTML = entry + "| ";
+
+                if(entry == " "){
+                    entry = "&nbsp;";
+                }
+
+                element = document.createElement("td");
+                element.innerHTML = entry;
                 rowElement.append(element);
             }
             container.append(rowElement);
         }
     }
+    $(request.btnSelector).removeAttr("disabled");
+    $(request.btnSelector).html("Calculate");
 }
 
 /**
